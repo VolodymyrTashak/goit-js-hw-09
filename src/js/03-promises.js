@@ -7,12 +7,11 @@ const refs = {
   amount: document.querySelector('[name="amount"]'),
   btnSubmit: document.querySelector('[name="submit"]'),
 };
-
 refs.form.addEventListener('submit', onSubmit);
 refs.form.addEventListener('intup', onInput);
 
 let formData = {};
-let counterPosition = 0;
+// let counterPosition = 0;
 
 // function onSubmit(event) {
 //   event.preventDefault();
@@ -22,7 +21,7 @@ let counterPosition = 0;
 //     console.log(formData.delay);
 //   });
 // }
-
+function onSubmit(event) {}
 function onInput(event) {
   formData[event.target.value] = event.target.value;
   console.log(event.target.value);

@@ -2,6 +2,7 @@
 import flatpickr from 'flatpickr';
 // Додатковий імпорт стилів
 import 'flatpickr/dist/flatpickr.min.css';
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
 const refs = {
   dataTimeInput: document.querySelector('#datetime-picker'),
@@ -13,23 +14,68 @@ const refs = {
   seconds: document.querySelector('[data-seconds]'),
 };
 
+refs.btnStart.addEventListener('click', onClick);
+refs.btnStart.disabled = true;
+
 const options = {
+  isActive: false,
+  deltaTime: null,
+  intervalId: null,
   enableTime: true,
   time_24hr: true,
   defaultDate: new Date(),
   minuteIncrement: 1,
+  dateFormat: 'Y-m-d H:i',
   onClose(selectedDates) {
     if (selectedDates[0] < this.defaultDate) {
-      window.alert('Please choose a date in the future');
+      Notify.failure('Please choose a date in the future');
       return;
     }
-    console.log(selectedDates[0]);
+    Notify.success('The date is correct');
+    refs.btnStart.disabled = false;
+
+    const startTime = options.defaultDate;
+    const endTime = selectedDates[0];
+    options.deltaTime = endTime - startTime;
+    const time = convertMs(options.defaultDate);
+    updateClockFace(time);
+  },
+  startTimer() {
+    if (options.isActive) {
+      return;
+    }
+    options.isActive = true;
+
+    const endTimer = options.deltaTime + Date.now();
+    options.intervalId = setInterval(() => {
+      if (
+        refs.days.textContent === '00' &&
+        refs.hours.textContent === '00' &&
+        refs.minutes.textContent === '00' &&
+        refs.seconds.textContent === '00'
+      ) {
+        return clearInterval(options.intervalId);
+      }
+      const deltaTimer = endTimer - Date.now();
+      const timer = convertMs(deltaTimer);
+      updateClockFace(timer);
+    }, 1000);
   },
 };
 
-refs.btnStart.addEventListener('click', onClick);
-refs.btnStart.disabled = true;
-function onClick(event) {}
+flatpickr(refs.dataTimeInput, options);
+
+function onClick(event) {
+  options.startTimer();
+}
+
+function updateClockFace({ days, hours, minutes, seconds }) {
+  refs.days.textContent = `${days}`;
+  refs.hours.textContent = `${hours}`;
+  refs.minutes.textContent = `${minutes}`;
+  refs.seconds.textContent = `${seconds}`;
+}
+
 function convertMs(ms) {
   // Number of milliseconds per unit of time
   const second = 1000;
@@ -48,7 +94,3 @@ function convertMs(ms) {
 
   return { days, hours, minutes, seconds };
 }
-
-console.log(convertMs(2000)); // {days: 0, hours: 0, minutes: 0, seconds: 2}
-console.log(convertMs(140000)); // {days: 0, hours: 0, minutes: 2, seconds: 20}
-console.log(convertMs(24140000)); // {days: 0, hours: 6 minutes: 42, seconds: 20}
