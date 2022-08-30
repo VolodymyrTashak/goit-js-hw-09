@@ -14,6 +14,18 @@ refs.form.addEventListener('input', onInput);
 let formData = {};
 let positionCounter = 0;
 
+function createPromise(position, delay) {
+  return new Promise((resolve, reject) => {
+    const shouldResolve = Math.random() > 0.3;
+
+    if (shouldResolve) {
+      resolve({ position, delay });
+    } else {
+      reject({ position, delay });
+    }
+  });
+}
+
 function onSubmit(evt) {
   evt.preventDefault();
   refs.btnSubmit.disabled = true;
@@ -38,18 +50,7 @@ function onSubmit(evt) {
     }, formData.step);
   }, formData.delay);
 }
+
 function onInput(evt) {
   formData[evt.target.name] = evt.target.value;
-}
-
-function createPromise(position, delay) {
-  return new Promise((resolve, reject) => {
-    const shouldResolve = Math.random() > 0.3;
-
-    if (shouldResolve) {
-      resolve({ position, delay });
-    } else {
-      reject({ position, delay });
-    }
-  });
 }
