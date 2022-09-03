@@ -49,6 +49,7 @@ function onSubmit(evt) {
       positionCounter = 0;
     }, formData.step);
   }, formData.delay);
+  evt.currentTarget.reset();
 }
 
 function onInput(evt) {

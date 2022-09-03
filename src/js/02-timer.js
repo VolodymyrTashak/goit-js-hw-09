@@ -7,7 +7,7 @@ import { Notify } from 'notiflix/build/notiflix-notify-aio';
 const refs = {
   dataTimeInput: document.querySelector('#datetime-picker'),
   btnStart: document.querySelector('[data-start]'),
-  timer: document.querySelector('.timer'),
+  // timer: document.querySelector('.timer'),
   days: document.querySelector('[data-days]'),
   hours: document.querySelector('[data-hours]'),
   minutes: document.querySelector('[data-minutes]'),
@@ -27,7 +27,7 @@ const options = {
   minuteIncrement: 1,
   dateFormat: 'Y-m-d H:i',
   onClose(selectedDates) {
-    if (selectedDates[0] < this.defaultDate) {
+    if (selectedDates[0] < options.defaultDate) {
       Notify.failure('Please choose a date in the future');
       return;
     }
@@ -37,16 +37,30 @@ const options = {
     const startTime = options.defaultDate;
     const endTime = selectedDates[0];
     options.deltaTime = endTime - startTime;
-    const time = convertMs(options.defaultDate);
+    const time = convertMs(options.deltaTime);
     updateClockFace(time);
   },
   startTimer() {
+    // if (options.isActive) {
+    //   return;
+    // }
+    refs.dataTimeInput.disabled = true;
+    if (!refs.btnStart.disabled) {
+      refs.dataTimeInput.disabled = true;
+    }
+
+    if (refs.dataTimeInput.disabled) {
+      refs.btnStart.disabled = true;
+    }
+
     if (options.isActive) {
       return;
     }
+
     options.isActive = true;
 
     const endTimer = options.deltaTime + Date.now();
+
     options.intervalId = setInterval(() => {
       if (
         refs.days.textContent === '00' &&
@@ -54,8 +68,11 @@ const options = {
         refs.minutes.textContent === '00' &&
         refs.seconds.textContent === '00'
       ) {
+        refs.dataTimeInput.disabled = false;
+        options.isActive = false;
         return clearInterval(options.intervalId);
       }
+
       const deltaTimer = endTimer - Date.now();
       const timer = convertMs(deltaTimer);
       updateClockFace(timer);
