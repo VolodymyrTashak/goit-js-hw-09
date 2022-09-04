@@ -7,7 +7,6 @@ import { Notify } from 'notiflix/build/notiflix-notify-aio';
 const refs = {
   dataTimeInput: document.querySelector('#datetime-picker'),
   btnStart: document.querySelector('[data-start]'),
-  // timer: document.querySelector('.timer'),
   days: document.querySelector('[data-days]'),
   hours: document.querySelector('[data-hours]'),
   minutes: document.querySelector('[data-minutes]'),
@@ -41,9 +40,6 @@ const options = {
     updateClockFace(time);
   },
   startTimer() {
-    // if (options.isActive) {
-    //   return;
-    // }
     refs.dataTimeInput.disabled = true;
     if (!refs.btnStart.disabled) {
       refs.dataTimeInput.disabled = true;
@@ -82,15 +78,15 @@ const options = {
 
 flatpickr(refs.dataTimeInput, options);
 
-function onClick(event) {
+function onClick() {
   options.startTimer();
 }
 
 function updateClockFace({ days, hours, minutes, seconds }) {
-  refs.days.textContent = `${days}`;
-  refs.hours.textContent = `${hours}`;
-  refs.minutes.textContent = `${minutes}`;
-  refs.seconds.textContent = `${seconds}`;
+  refs.days.textContent = addLeadingZero(`${days}`);
+  refs.hours.textContent = addLeadingZero(`${hours}`);
+  refs.minutes.textContent = addLeadingZero(`${minutes}`);
+  refs.seconds.textContent = addLeadingZero(`${seconds}`);
 }
 
 function convertMs(ms) {
@@ -110,4 +106,8 @@ function convertMs(ms) {
   const seconds = Math.floor((((ms % day) % hour) % minute) / second);
 
   return { days, hours, minutes, seconds };
+}
+
+function addLeadingZero(value) {
+  return String(value).padStart(2, 0);
 }
